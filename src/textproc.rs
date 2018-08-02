@@ -52,6 +52,10 @@ pub fn is_english(input: &String) -> f64 {
     diff
 }
 
+pub fn hamming_distance(text1: &str, text2: &str) -> u32 {
+    12
+}
+
 fn freq_letter(text: &String, letter: char) -> f64 {
     100.0 * text.matches(letter).count() as f64 / text.len() as f64
 }
