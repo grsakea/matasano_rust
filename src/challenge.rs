@@ -1,6 +1,5 @@
 extern crate base64;
 extern crate hex;
-//extern crate crypto;
 
 use crypto;
 use std::f64;

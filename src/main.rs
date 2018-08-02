@@ -1,5 +1,4 @@
 extern crate base64;
-//extern crate challenge;
 
 mod challenge;
 mod crypto;
