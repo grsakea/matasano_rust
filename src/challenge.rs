@@ -53,5 +53,4 @@ pub fn challenge_5() {
     let out_str = hex::encode(out);
 
     println!("{}", out_str);
-
 }

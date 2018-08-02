@@ -2,6 +2,7 @@ extern crate base64;
 
 mod challenge;
 mod crypto;
+mod textproc;
 
 fn main() {
     println!("Challenge 1");
