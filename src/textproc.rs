@@ -1,5 +1,4 @@
-pub fn is_english(input: &String) -> f64 {
-    let cleaned_up = input.to_lowercase().replace(is_not_alphabetic, "");
+pub fn is_english(input: &Vec<u8>) -> f64 {
     let mut freqs: Vec<LetterFreq> = Vec::new();
     freqs.push(LetterFreq{letter:'a', freq: 8.12} );
     freqs.push(LetterFreq{letter:'b', freq: 1.49} );
@@ -28,28 +27,14 @@ pub fn is_english(input: &String) -> f64 {
     freqs.push(LetterFreq{letter:'y', freq: 1.974} );
     freqs.push(LetterFreq{letter:'z', freq: 0.074} );
 
-    let banned_letter = ['$', '#', '"', '(', ')', '&', '%'];
-
-    for i in input.bytes() {
-        if !i.is_ascii() {
-            return 200.0;
-        }
-    }
-
     let mut diff = 0.0;
 
     for i in freqs {
-        diff += (freq_letter(&cleaned_up, i.letter) - i.freq).abs();
+        let freq_let = freq_letter(&input, i.letter);
+        let temp = (freq_let - i.freq).abs();
+        diff += temp
     }
-    for letter in banned_letter.iter() {
-        if freq_letter(&input, *letter) != 0.0 {
-            return 1000.0
-        }
-    }
-    if freq_letter(&input, ' ') == 0.0 {
-        return 1000.0
-    }
-    diff
+    diff / input.len() as f64
 }
 
 pub fn hamming_distance(text1: &Vec<u8>, text2: &Vec<u8>) -> u32 {
@@ -65,15 +50,17 @@ pub fn hamming_distance(text1: &Vec<u8>, text2: &Vec<u8>) -> u32 {
     dist
 }
 
-fn freq_letter(text: &String, letter: char) -> f64 {
-    100.0 * text.matches(letter).count() as f64 / text.len() as f64
+fn freq_letter(text: &Vec<u8>, letter: char) -> f64 {
+    let mut nb_occ = 0;
+    for x in text {
+        if *x == letter as u8 {
+            nb_occ += 1;
+        }
+    }
+    100.0 * nb_occ as f64 / text.len() as f64
 }
 
 struct LetterFreq {
     letter: char,
     freq: f64,
-}
-
-fn is_not_alphabetic(c: char) -> bool {
-    !c.is_alphabetic()
 }
