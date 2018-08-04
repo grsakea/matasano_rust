@@ -23,7 +23,7 @@ pub fn xor_repeating(input: &Vec<u8>, key: &Vec<u8>) -> Vec<u8> {
     xor(input, &key_array)
 }
 
-pub fn xor(a: &Vec<u8>, b: &Vec<u8>) -> Vec<u8> {
+fn xor(a: &Vec<u8>, b: &Vec<u8>) -> Vec<u8> {
     let mut out : Vec<u8> = Vec::new();
     for (ba, bb) in a.iter().zip(b) {
         out.push(ba ^ bb)

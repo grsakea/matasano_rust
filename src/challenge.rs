@@ -17,7 +17,7 @@ pub fn challenge_2() {
     let input1 = hex::decode("1c0111001f010100061a024b53535009181c").unwrap();
     let input2 = hex::decode("686974207468652062756c6c277320657965").unwrap();
 
-    let output = crypto::xor(&input1, &input2);
+    let output = crypto::xor_repeating(&input1, &input2);
     println!("{}", hex::encode(output));
 }
 
