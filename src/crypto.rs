@@ -35,3 +35,17 @@ pub fn xor(a: &Vec<u8>, b: &Vec<u8>) -> Vec<u8> {
     }
     out
 }
+
+pub fn find_keysize(input: &Vec<u8>) -> usize{
+    let mut best_keysize = (0, f64::INFINITY);
+    for guess in 3..40 {
+        let block1 = input[0..guess].to_vec();
+        let block2 = input[guess..guess*2].to_vec();
+        let distance: f64 = textproc::hamming_distance(&block1, &block2) as f64 / guess as f64;
+
+        if distance < best_keysize.1 {
+            best_keysize = (guess, distance);
+        }
+    }
+    best_keysize.0
+}

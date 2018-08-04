@@ -54,3 +54,14 @@ pub fn challenge_5() {
 
     println!("{}", out_str);
 }
+
+pub fn challenge_6() {
+    let mut file = File::open("data/6good.txt").unwrap();
+    let mut all_file = String::new();
+    file.read_to_string(&mut all_file).unwrap();
+    println!("all_file {}", all_file);
+    let data = base64::decode(&all_file).unwrap();
+
+    let keysize = crypto::find_keysize(&data);
+    println!("keysize {}", keysize);
+}
