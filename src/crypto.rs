@@ -79,7 +79,7 @@ fn break_xor_with_keylen(input: &Vec<u8>, keylen: usize) -> Vec<u8> {
     println!("strips.len {}", strips.len());
     let mut key: Vec<u8> = vec![];
     for strip in strips {
-        let (key_byte, conf) = find_single_xor(&strip);
+        let (key_byte, _) = find_single_xor(&strip);
         key.push(key_byte);
     }
     key
