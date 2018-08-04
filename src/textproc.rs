@@ -52,8 +52,17 @@ pub fn is_english(input: &String) -> f64 {
     diff
 }
 
-pub fn hamming_distance(text1: &str, text2: &str) -> u32 {
-    12
+pub fn hamming_distance(text1: &Vec<u8>, text2: &Vec<u8>) -> u32 {
+    let data = (text1, text2);
+    let mut dist = 0;
+    for (i,j) in data.0.iter().zip(data.1) {
+        let mut diff = i ^ j;
+        while diff != 0 {
+            dist += 1;
+            diff = diff & diff-1;
+        }
+    }
+    dist
 }
 
 fn freq_letter(text: &String, letter: char) -> f64 {

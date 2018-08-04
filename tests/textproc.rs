@@ -2,6 +2,8 @@ extern crate hello_world;
 
 #[test]
 fn test_hamming() {
-    assert_eq!(hello_world::textproc::hamming_distance("this is a test", "wokka wokka!!!"), 37);
+    let text1 = "this is a test".as_bytes().to_vec();
+    let text2 = "wokka wokka!!!".as_bytes().to_vec();
+    assert_eq!(hello_world::textproc::hamming_distance(&text1, &text2), 37);
 }
 
