@@ -1,9 +1,8 @@
 [package]
-name = "hello_world"
+name = "matasano"
 version = "0.1.0"
 authors = ["grsakea <grsakea@users.noreply.github.com>"]
 
 [dependencies]
 hex = "0.3.2"
 base64 = "0.9.2"
-whatlang = "0.5.0"
