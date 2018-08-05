@@ -17,6 +17,14 @@ fn main() {
     challenge::challenge_5();
     println!("Challenge 6");
     challenge::challenge_6();
+    println!("Challenge 7");
+    challenge::challenge_7();
+    println!("Challenge 8");
+    challenge::challenge_8();
+    println!("Challenge 9");
+    challenge::challenge_9();
+    println!("Challenge 10");
+    challenge::challenge_10();
 }
 
 

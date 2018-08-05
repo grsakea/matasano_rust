@@ -2,6 +2,15 @@ extern crate hex;
 
 use std::f64;
 use textproc;
+pub mod aes;
+
+pub fn aes_decrypt(_data: &Vec<u8>, key: &Vec<u8>) -> Vec<u8> {
+    let big_key = aes::key_expansion(key);
+
+
+
+    vec![]
+}
 
 pub fn find_single_xor(input: &Vec<u8>) -> (u8, f64) {
     let mut best_guess = (0, f64::INFINITY);

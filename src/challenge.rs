@@ -65,3 +65,27 @@ pub fn challenge_6() {
     let cleartext_string = String::from_utf8(cleartext).unwrap();
     println!("{}", cleartext_string);
 }
+
+pub fn challenge_7() {
+    let mut file = File::open("data/6good.txt").unwrap();
+    let mut all_file = String::new();
+    file.read_to_string(&mut all_file).unwrap();
+    let data = base64::decode(&all_file).unwrap();
+
+    let key = "YELLOW SUBMARINE".as_bytes().to_vec();
+
+    let out = crypto::aes_decrypt(&data, &key);
+
+    let cleartext = String::from_utf8(out).unwrap();
+
+    println!("{}", cleartext);
+}
+pub fn challenge_8() {
+    println!("TODO");
+}
+pub fn challenge_9() {
+    println!("TODO");
+}
+pub fn challenge_10() {
+    println!("TODO");
+}
