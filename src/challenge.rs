@@ -67,14 +67,14 @@ pub fn challenge_6() {
 }
 
 pub fn challenge_7() {
-    let mut file = File::open("data/6good.txt").unwrap();
+    let mut file = File::open("data/7good.txt").unwrap();
     let mut all_file = String::new();
     file.read_to_string(&mut all_file).unwrap();
     let data = base64::decode(&all_file).unwrap();
 
     let key = "YELLOW SUBMARINE".as_bytes().to_vec();
 
-    let out = crypto::aes_decrypt(&data, &key);
+    let out = crypto::aes_decrypt_ecb(&data, &key);
 
     let cleartext = String::from_utf8(out).unwrap();
 
