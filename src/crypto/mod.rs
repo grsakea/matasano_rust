@@ -95,3 +95,17 @@ fn break_xor_with_keylen(input: &Vec<u8>, keylen: usize) -> Vec<u8> {
     }
     key
 }
+
+pub fn number_repetition(data: &Vec<u8>, chunk_size: usize) -> usize {
+    let temp = data.chunks(chunk_size).collect::<Vec<&[u8]>>();
+    let mut to_process = vec![];
+    for i in &temp {
+        to_process.push(i.to_vec());
+        println!("{:?}", i);
+    }
+
+    to_process.sort_unstable();
+    to_process.dedup();
+
+    temp.len() - to_process.len()
+}

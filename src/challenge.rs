@@ -81,7 +81,19 @@ pub fn challenge_7() {
     println!("{}", cleartext);
 }
 pub fn challenge_8() {
-    println!("TODO");
+    let mut file = File::open("data/8.txt").unwrap();
+    let mut all_file = String::new();
+    file.read_to_string(&mut all_file).unwrap();
+
+    let mut best_guess = ("", 0);
+    for line in all_file.lines() {
+        let data = hex::decode(line).unwrap();
+        let nb_rep = crypto::number_repetition(&data, 16);
+        if nb_rep > best_guess.1 {
+            best_guess = (line, nb_rep);
+        }
+    }
+    println!("{} {}", best_guess.0, best_guess.1);
 }
 pub fn challenge_9() {
     println!("TODO");
