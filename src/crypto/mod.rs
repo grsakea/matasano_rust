@@ -102,7 +102,6 @@ pub fn break_xor(input: &Vec<u8>) -> Vec<u8> {
 
 fn break_xor_with_keylen(input: &Vec<u8>, keylen: usize) -> Vec<u8> {
     let strips = split_block(input, keylen);
-    println!("strips.len {}", strips.len());
     let mut key: Vec<u8> = vec![];
     for strip in strips {
         let (key_byte, _) = find_single_xor(&strip);
@@ -116,7 +115,6 @@ pub fn number_repetition(data: &Vec<u8>, chunk_size: usize) -> usize {
     let mut to_process = vec![];
     for i in &temp {
         to_process.push(i.to_vec());
-        println!("{:?}", i);
     }
 
     to_process.sort_unstable();
