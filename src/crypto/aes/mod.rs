@@ -24,19 +24,48 @@ pub fn decrypt_block(data: &Vec<u8>, key: &Vec<u8>) -> Vec<u8> {
     state
 }
 
+pub fn encrypt_block(data: &Vec<u8>, key: &Vec<u8>) -> Vec<u8> {
+    let big_key = key_expansion(key);
+
+    let mut state = data.clone();
+    state = add_round_key(&state, &big_key[0..16].to_vec());
+
+    for round in 1..10 {
+        state = sbox(&state);
+        state = shift_row(&state);
+        state = mix_columns(&state);
+        let round_key = big_key[16*round..16*round + 16].to_vec();
+        state = add_round_key(&state, &round_key);
+    }
+    state = sbox(&state);
+    state = shift_row(&state);
+    state = add_round_key(&state, &big_key[16*10..big_key.len()].to_vec());
+
+    state
+}
+
 #[test]
-fn test_aes_decrypt() {
+fn test_aes_decrypt_block() {
     let input_data = hex::decode("69c4e0d86a7b0430d8cdb78070b4c55a").unwrap();
     let input_key = hex::decode("000102030405060708090a0b0c0d0e0f").unwrap();
     let output = hex::decode("00112233445566778899aabbccddeeff").unwrap();
     assert_eq!(decrypt_block(&input_data, &input_key), output);
 }
 
+
+#[test]
+fn test_aes_encrypt_block() {
+    let input_data = hex::decode("00112233445566778899aabbccddeeff").unwrap();
+    let input_key = hex::decode("000102030405060708090a0b0c0d0e0f").unwrap();
+    let output = hex::decode("69c4e0d86a7b0430d8cdb78070b4c55a").unwrap();
+    assert_eq!(encrypt_block(&input_data, &input_key), output);
+}
+
 pub fn add_round_key(data: &Vec<u8>, round_key: &Vec<u8>) -> Vec<u8> {
     crypto::xor_repeating(&data, &round_key)
 }
 
-pub fn inv_shift_row(data: &Vec<u8>) -> Vec<u8> {
+fn inv_shift_row(data: &Vec<u8>) -> Vec<u8> {
     let mut temp = vec![];
 
     temp.push(data[00]);
@@ -55,6 +84,28 @@ pub fn inv_shift_row(data: &Vec<u8>) -> Vec<u8> {
     temp.push(data[09]);
     temp.push(data[06]);
     temp.push(data[03]);
+    temp
+}
+
+fn shift_row(data: &Vec<u8>) -> Vec<u8> {
+    let mut temp = vec![];
+
+    temp.push(data[00]);
+    temp.push(data[05]);
+    temp.push(data[10]);
+    temp.push(data[15]);
+    temp.push(data[04]);
+    temp.push(data[09]);
+    temp.push(data[14]);
+    temp.push(data[03]);
+    temp.push(data[08]);
+    temp.push(data[13]);
+    temp.push(data[02]);
+    temp.push(data[07]);
+    temp.push(data[12]);
+    temp.push(data[01]);
+    temp.push(data[06]);
+    temp.push(data[11]);
     temp
 }
 
@@ -86,11 +137,24 @@ fn sbox(input: &Vec<u8>) -> Vec<u8> {
     output
 }
 
-pub fn inv_mix_columns(state: &Vec<u8>) -> Vec<u8> {
+fn inv_mix_columns(state: &Vec<u8>) -> Vec<u8> {
     let mut out = vec![];
     for col in 0..4 {
         let offset = 4*col;
         let temp = inv_mix_column(state[offset], state[offset+1], state[offset+2], state[offset+3]);
+        for i in temp {
+            out.push(i);
+        }
+    }
+
+    out
+}
+
+fn mix_columns(state: &Vec<u8>) -> Vec<u8> {
+    let mut out = vec![];
+    for col in 0..4 {
+        let offset = 4*col;
+        let temp = mix_column(state[offset], state[offset+1], state[offset+2], state[offset+3]);
         for i in temp {
             out.push(i);
         }
@@ -109,18 +173,19 @@ fn inv_mix_column(a0: u8, a1: u8, a2: u8, a3:u8) -> Vec<u8> {
 }
 
 
-fn mix_column(a0: u8, a1: u8, a2: u8, a3:u8) -> (u8,u8,u8,u8) {
-    let r0 = gal_mul(2, a0) ^ gal_mul(3, a1) ^ a2             ^ a3;
-    let r1 = a0             ^ gal_mul(2, a1) ^ gal_mul(3, a2) ^ a3;
-    let r2 = a0             ^ a1             ^ gal_mul(2, a2) ^ gal_mul(3, a3);
-    let r3 = gal_mul(3, a0) ^ a1             ^ a2             ^ gal_mul(2, a3);
-    (r0, r1, r2, r3)
+fn mix_column(a0: u8, a1: u8, a2: u8, a3:u8) -> Vec<u8> {
+    let mut out = vec![];
+    out.push(gal_mul(2, a0) ^ gal_mul(3, a1) ^ a2             ^ a3);
+    out.push(a0             ^ gal_mul(2, a1) ^ gal_mul(3, a2) ^ a3);
+    out.push(a0             ^ a1             ^ gal_mul(2, a2) ^ gal_mul(3, a3));
+    out.push(gal_mul(3, a0) ^ a1             ^ a2             ^ gal_mul(2, a3));
+    out
 }
 
 #[test]
 fn test_mix_column() {
-    assert_eq!(mix_column(0xdb,0x13,0x53,0x45),(0x8e,0x4d,0xa1,0xbc));
-    assert_eq!(mix_column(0xf2,0x0a,0x22,0x5c),(0x9f,0xdc,0x58,0x9d));
+    assert_eq!(mix_column(0xdb,0x13,0x53,0x45),[0x8e,0x4d,0xa1,0xbc].to_vec());
+    assert_eq!(mix_column(0xf2,0x0a,0x22,0x5c),[0x9f,0xdc,0x58,0x9d].to_vec());
 }
 
 fn gal_mul(base:u8, a: u8) -> u8 {
