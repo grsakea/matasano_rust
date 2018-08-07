@@ -105,3 +105,23 @@ pub fn challenge_9() {
 pub fn challenge_10() {
     println!("TODO");
 }
+
+pub fn challenge_11() {
+    println!("TODO");
+}
+
+pub fn challenge_12() {
+    println!("TODO");
+}
+
+pub fn challenge_13() {
+    println!("TODO");
+}
+
+pub fn challenge_14() {
+    println!("TODO");
+}
+
+pub fn challenge_15() {
+    println!("TODO");
+}
