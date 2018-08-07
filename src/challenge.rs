@@ -96,7 +96,11 @@ pub fn challenge_8() {
     println!("{} {}", best_guess.0, best_guess.1);
 }
 pub fn challenge_9() {
-    println!("TODO");
+    let data = "YELLOW SUBMARINE".as_bytes().to_vec();
+    let out = crypto::pkcs7_padding(&data, 20);
+    println!("{}", hex::encode(&out));
+    assert_eq!(out.len(), 20);
+    assert_eq!(hex::encode(&out), "59454c4c4f57205355424d4152494e4504040404");
 }
 pub fn challenge_10() {
     println!("TODO");

@@ -14,6 +14,21 @@ pub fn aes_decrypt_ecb(data: &Vec<u8>, key :&Vec<u8>) -> Vec<u8> {
     out
 }
 
+pub fn pkcs7_padding(data: &Vec<u8>, block_size: usize) -> Vec<u8> {
+    let padder: u8 =
+        if data.len() < block_size {
+            (block_size % data.len()) as u8
+        } else {
+            (data.len() % block_size) as u8
+        };
+    let mut out = data.clone();
+
+    for _ in 0..padder {
+        out.push(padder);
+    }
+    out
+}
+
 pub fn find_single_xor(input: &Vec<u8>) -> (u8, f64) {
     let mut best_guess = (0, f64::INFINITY);
     for key in 0..u8::max_value() {
