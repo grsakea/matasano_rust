@@ -1,4 +1,5 @@
 extern crate hex;
+extern crate base64;
 
 use std::f64;
 use textproc;
@@ -28,6 +29,76 @@ pub fn pkcs7_padding(data: &Vec<u8>, block_size: usize) -> Vec<u8> {
     }
     out
 }
+
+pub fn aes_decrypt_cbc(data: &Vec<u8>, key: &Vec<u8>, iv: &Vec<u8>) -> Vec<u8> {
+    let mut out = vec![];
+
+    let mut to_xor = iv.clone();
+    for block in data.chunks(16) {
+        let block = block.to_vec();
+        let temp = aes::decrypt_block(&block, &key);
+        let temp = xor_repeating(&temp, &to_xor);
+        out.append(&mut temp.clone());
+        to_xor = block.clone();
+    }
+    out
+}
+
+pub fn aes_encrypt_cbc(data: &Vec<u8>, key: &Vec<u8>, iv: &Vec<u8>) -> Vec<u8> {
+    let mut out = vec![];
+
+    let mut temp = xor_repeating(&data[0..16].to_vec(), iv);
+    temp = aes::encrypt_block(&temp, key);
+    out.append(&mut temp.clone());
+    for block in data[16..data.len()].chunks(16) {
+        temp = xor_repeating(&temp, &block.to_vec());
+        temp = aes::encrypt_block(&temp, key);
+        out.append(&mut temp.clone());
+    }
+    out
+}
+
+
+#[test]
+fn test_encrypt_cbc() {
+    let cleartext = hex::decode("49276d206261636b20616e642049276d2072696e67696e27207468652062656c").unwrap().to_vec();
+    let iv = vec![0;16];
+    let key = "YELLOW SUBMARINE".as_bytes().to_vec();
+
+    let my_encrypted = aes_encrypt_cbc(&cleartext, &key, &iv);
+    let expected = hex::decode("091230aade3eb330dbaa4358f88d2a6cd5cf8355cb6823397ad43906df434455").unwrap().to_vec();
+    assert_eq!(my_encrypted, expected);
+}
+
+#[test]
+fn test_decrypt_cbc() {
+    let encrypted = hex::decode("091230aade3eb330dbaa4358f88d2a6cd5cf8355cb6823397ad43906df434455").unwrap().to_vec();
+    let iv = vec![0;16];
+    let key = "YELLOW SUBMARINE".as_bytes().to_vec();
+
+    let my_clear = aes_decrypt_cbc(&encrypted, &key, &iv);
+    let expected = hex::decode("49276d206261636b20616e642049276d2072696e67696e27207468652062656c").unwrap().to_vec();
+    assert_eq!(my_clear, expected);
+}
+
+//#[test]
+//fn test_cbc() {
+    //let cleartext = hex::decode("49276d206261636b20616e642049276d2072696e67696e27207468652062656c").unwrap().to_vec();
+    ////let good_encrypted = hex::decode("091230aade3eb330dbaa4358f88d2a6c37b72d0cf4c22c344aec4142d00ce530").unwrap().to_vec();
+    //let iv = vec![0;16];
+    //let key = "YELLOW SUBMARINE".as_bytes().to_vec();
+    //let good_encrypted = openssl::symm::encrypt(openssl::symm::Cipher::aes_128_cbc(), &key, Some(&iv), &cleartext).unwrap();
+
+    //println!("Len {} ", cleartext.len());
+    //println!("Len {} ", good_encrypted.len());
+    //println!("Start encryption");
+    //let encrypted = aes_encrypt_cbc(&cleartext, &key, &iv);
+    //println!("End encryption");
+    //let decrypted = aes_decrypt_cbc(&good_encrypted, &key, &iv);
+    //println!("{}", String::from_utf8(decrypted.clone()).unwrap());
+    //assert_eq!(encrypted, good_encrypted);
+    //assert_eq!(&cleartext, &decrypted);
+//}
 
 pub fn find_single_xor(input: &Vec<u8>) -> (u8, f64) {
     let mut best_guess = (0, f64::INFINITY);

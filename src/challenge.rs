@@ -64,6 +64,7 @@ pub fn challenge_6() {
     let cleartext = crypto::xor_repeating(&data, &key);
     let cleartext_string = String::from_utf8(cleartext).unwrap();
     println!("{}", cleartext_string);
+    println!("{}", hex::encode(&cleartext_string[0..32]));
 }
 
 pub fn challenge_7() {
@@ -103,7 +104,18 @@ pub fn challenge_9() {
     assert_eq!(hex::encode(&out), "59454c4c4f57205355424d4152494e4504040404");
 }
 pub fn challenge_10() {
-    println!("TODO");
+    let mut file = File::open("data/10good.txt").unwrap();
+    let mut all_file = String::new();
+    file.read_to_string(&mut all_file).unwrap();
+    let data = base64::decode(&all_file).unwrap();
+
+    let key = "YELLOW SUBMARINE".as_bytes().to_vec();
+    let iv = vec![0x00;16];
+    let out = crypto::aes_decrypt_cbc(&data, &key, &iv);
+
+    let cleartext = String::from_utf8(out).unwrap();
+
+    println!("{}", cleartext);
 }
 
 pub fn challenge_11() {
