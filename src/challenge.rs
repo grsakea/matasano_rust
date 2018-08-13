@@ -113,13 +113,23 @@ pub fn challenge_10() {
     let iv = vec![0x00;16];
     let out = crypto::aes_decrypt_cbc(&data, &key, &iv);
 
-    let cleartext = String::from_utf8(out).unwrap();
+    let cleartext = String::from_utf8(out.clone()).unwrap();
 
     println!("{}", cleartext);
 }
 
 pub fn challenge_11() {
-    println!("TODO");
+    let mut file = File::open("data/11.txt").unwrap();
+    let mut all_file = String::new();
+    file.read_to_string(&mut all_file).unwrap();
+    let data = base64::decode(&all_file).unwrap();
+
+    let it_data = crypto::encryption_oracle(data.clone());
+    if crypto::is_ecb(it_data) {
+        println!("ECB");
+    } else {
+        println!("CBC");
+    }
 }
 
 pub fn challenge_12() {

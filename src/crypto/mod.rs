@@ -1,9 +1,22 @@
 extern crate hex;
 extern crate base64;
+extern crate rand;
 
+use self::rand::{thread_rng, Rng};
+use self::rand::distributions::Uniform;
 use std::f64;
 use textproc;
 pub mod aes;
+
+pub fn aes_encrypt_ecb(data: &Vec<u8>, key :&Vec<u8>) -> Vec<u8> {
+    let mut out = vec![];
+    for block in data.chunks(16) {
+        let block_data = block.to_vec();
+        let mut temp = aes::encrypt_block(&block_data, key);
+        out.append(&mut temp);
+    }
+    out
+}
 
 pub fn aes_decrypt_ecb(data: &Vec<u8>, key :&Vec<u8>) -> Vec<u8> {
     let mut out = vec![];
@@ -24,7 +37,7 @@ pub fn pkcs7_padding(data: &Vec<u8>, block_size: usize) -> Vec<u8> {
         };
     let mut out = data.clone();
 
-    for _ in 0..padder {
+    while out.len() % block_size != 0 {
         out.push(padder);
     }
     out
@@ -192,4 +205,40 @@ pub fn number_repetition(data: &Vec<u8>, chunk_size: usize) -> usize {
     to_process.dedup();
 
     temp.len() - to_process.len()
+}
+
+fn junk_text() -> Vec<u8> {
+    let mut rng = thread_rng();
+    let number_char: usize = rng.gen_range(5, 10);
+
+    let textrange = Uniform::new_inclusive('A' as u8, 'z' as u8);
+    let v: Vec<u8> = thread_rng().sample_iter(&textrange).take(number_char).collect();
+    v
+}
+
+
+pub fn encryption_oracle(input: Vec<u8>) -> Vec<u8> {
+    let key = aes::random_key();
+    let start_junk = junk_text();
+    let end_junk = junk_text();
+
+    let mut data = start_junk;
+    data.extend(&input);
+    data.extend(&end_junk);
+    let data = pkcs7_padding(&data, 16);
+
+    let encrypted = {
+        if rand::random::<bool>() {
+            println!("this is cbc");
+            aes_encrypt_cbc(&data, &key, &vec![0;16])
+        } else {
+            println!("this is ecb");
+            aes_encrypt_ecb(&data, &key)
+        }
+    };
+    encrypted
+}
+
+pub fn is_ecb(input: Vec<u8>) -> bool {
+    number_repetition(&input, 16) != 0
 }

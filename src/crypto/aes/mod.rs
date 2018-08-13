@@ -1,4 +1,5 @@
 extern crate hex;
+extern crate rand;
 
 mod constant;
 use crypto;
@@ -291,3 +292,12 @@ fn key_schedule_core(key: &[u8], rcon: u8) -> Vec<u8> {
 fn key_rotate(key: &[u8]) -> [u8;4] {
     [key[1], key[2], key[3], key[0]]
 }
+
+pub fn random_key() -> Vec<u8> {
+    let mut key = vec![];
+    while key.len() < 16 {
+        key.push(rand::random());
+    }
+    key
+}
+
