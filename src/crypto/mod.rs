@@ -94,25 +94,6 @@ fn test_decrypt_cbc() {
     assert_eq!(my_clear, expected);
 }
 
-//#[test]
-//fn test_cbc() {
-    //let cleartext = hex::decode("49276d206261636b20616e642049276d2072696e67696e27207468652062656c").unwrap().to_vec();
-    ////let good_encrypted = hex::decode("091230aade3eb330dbaa4358f88d2a6c37b72d0cf4c22c344aec4142d00ce530").unwrap().to_vec();
-    //let iv = vec![0;16];
-    //let key = "YELLOW SUBMARINE".as_bytes().to_vec();
-    //let good_encrypted = openssl::symm::encrypt(openssl::symm::Cipher::aes_128_cbc(), &key, Some(&iv), &cleartext).unwrap();
-
-    //println!("Len {} ", cleartext.len());
-    //println!("Len {} ", good_encrypted.len());
-    //println!("Start encryption");
-    //let encrypted = aes_encrypt_cbc(&cleartext, &key, &iv);
-    //println!("End encryption");
-    //let decrypted = aes_decrypt_cbc(&good_encrypted, &key, &iv);
-    //println!("{}", String::from_utf8(decrypted.clone()).unwrap());
-    //assert_eq!(encrypted, good_encrypted);
-    //assert_eq!(&cleartext, &decrypted);
-//}
-
 pub fn find_single_xor(input: &Vec<u8>) -> (u8, f64) {
     let mut best_guess = (0, f64::INFINITY);
     for key in 0..u8::max_value() {
